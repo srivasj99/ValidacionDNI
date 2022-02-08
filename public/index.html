@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNI</title>
+</head>
+<body>
+    <h1>DNI</h1>
+        <input type="text" name="dni" id="dni" placeholder="99999999-A">
+        <button id="btnComprobar">Comprobar</button>
+        <p id="parrafo"></p>
+
+    <script>
+        let parrafo = document.getElementById("parrafo");
+        let btnComprobar = document.getElementById("btnComprobar");
+        let dni = document.getElementById("dni")
+        let regex_dni = /^[0-9]{8,8}[A-Za-z]$/;
+        btnComprobar.addEventListener("click", () => {
+            let numeroDNI = parseInt(dni.value.substr(0,dni.value.length-1), 10);
+            if(dni.value == ""){
+                parrafo.innerHTML = "Introduce un DNI"
+            }
+            if(numeroDNI > 99999999){
+                parrafo.innerHTML = "El numero del DNI debe tener 8 numeros"
+            }
+
+            if(regex_dni.test(dni.value) == false){
+                parrafo.innerHTML = "DNI no valido, comprueba que esté bien escrito"
+            }else{
+                fetch("/dni", {
+                    method: "POST",
+                    body: JSON.stringify({"dni": dni.value.trim()}),
+                    headers:{
+                        "Content-type": "application/json; charset=UTF-8"
+                    },
+                })
+                .then((response) => response.json())
+                .then((json) => parrafo.innerHTML = json.msg)
+            }
+
+        })
+    </script>
+</body>
+</html>
